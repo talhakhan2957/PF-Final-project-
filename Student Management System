@@ -1,0 +1,464 @@
+#include <iostream>
+#include <iomanip>
+using namespace std;
+const int MAX_STUDENTS = 50;
+
+// Arrays to store student information
+int studentID[MAX_STUDENTS];
+string studentName[MAX_STUDENTS];
+string studentContact[MAX_STUDENTS];
+char studentGrades[MAX_STUDENTS][3]; // Three grades for each student
+double studentGPA[MAX_STUDENTS];
+
+int studentCount = 0;
+
+// Function to add a new student
+void addStudent()
+{
+    if (studentCount >= MAX_STUDENTS)
+    {
+        cout << "Class is full. Cannot add more students.\n";
+        return;
+    }
+
+    cout << "Enter student ID: ";
+    cin >> studentID[studentCount];
+    cin.ignore(); // Clear the newline character
+    cout << "Enter student name: ";
+    getline(cin, studentName[studentCount]);
+    cout << "Enter contact information: ";
+    getline(cin, studentContact[studentCount]);
+    studentGrades[studentCount][0] = ' '; // Initialize grades as empty
+    studentGrades[studentCount][1] = ' ';
+    studentGrades[studentCount][2] = ' ';
+    studentGPA[studentCount] = 0.0; // Initialize GPA to 0.0
+
+    cout << "Student added successfully.\n";
+    studentCount++;
+}
+
+// Function to remove a student based on ID
+void removeStudent()
+{
+    int id;
+    cout << "Enter student ID to remove: ";
+    cin >> id;
+
+    for (int i = 0; i < studentCount; ++i)
+        {
+        if (studentID[i] == id) {
+            studentID[i] = -1; // Set ID to -1 to indicate removal
+            cout << "Student removed successfully.\n";
+            return;
+        }
+    }
+
+    cout << "Student not found.\n";
+}
+
+// Function to update contact information based on ID
+bool updateContactInfo(int id)
+{
+    for (int i = 0; i < studentCount; ++i) {
+        if (studentID[i] == id)
+        {
+            cout << "Enter new contact information: ";
+            cin.ignore(); // Clear the newline character
+            getline(std::cin, studentContact[i]);
+            cout << "Contact information updated successfully.\n";
+            return true;
+        }
+    }
+
+    cout << "Student not found.\n";
+    return false;
+}
+
+// Function to calculate GPA for a student
+double calculateGPA(char grades[])
+{
+    double totalPoints = 0.0;
+    double totalCredits = 0.0;
+
+    // Define the grade points corresponding to each grade
+    const double gradePoints[] = {4.0, 3.0, 2.0, 0.0}; // A, B, C, F respectively
+
+    // Calculate total points and credits based on the grades
+    for (int i = 0; i < 3; ++i)
+        {
+        // Assuming 'grades' array contains grades for three courses
+        if (grades[i] == 'A')
+        {
+            totalPoints += gradePoints[0] * 3.0; // Grade points * credit hours
+            totalCredits += 3.0;
+        } else if (grades[i] == 'B') {
+            totalPoints += gradePoints[1] * 3.0;
+            totalCredits += 3.0;
+        } else if (grades[i] == 'C') {
+            totalPoints += gradePoints[2] * 3.0;
+             totalCredits += 3.0;
+        } else if (grades[i] == 'F') {
+            totalPoints += gradePoints[3] * 3.0;
+            totalCredits += 3.0;
+        } // No other grades considered
+
+        // GPA is computed as the sum of Grade counts * credit hours divided by the total of credit hours
+    }
+
+    return totalPoints / totalCredits; // Calculate and return the GPA
+}
+
+
+
+
+// Function to display student information based on ID
+void displayStudentInfo(int studentID, string studentName, float gpa)
+{
+    cout << "Student ID: " << studentID << endl;
+    cout << "Student Name: " << studentName << endl;
+    cout << "GPA: " << gpa << endl;
+}
+
+// Function to generate a class report
+void generateClassReport()
+{
+    if (studentCount == 0)
+    {
+        cout << "No students in the class.\n";
+        return;
+    }
+
+    double totalGPA = 0.0;
+    double highestGPA = studentGPA[0]; // Initialize highest GPA with the first student's GPA
+    double lowestGPA = studentGPA[0];  // Initialize lowest GPA with the first student's GPA
+
+    // Calculate total GPA, highest GPA, and lowest GPA
+    for (int i = 0; i < studentCount; ++i)
+    {
+        totalGPA += studentGPA[i];
+        if (studentGPA[i] > highestGPA)
+        {
+            highestGPA = studentGPA[i];
+        }
+        if (studentGPA[i] < lowestGPA)
+        {
+            lowestGPA = studentGPA[i];
+        }
+    }
+
+    // Calculate average GPA
+    double averageGPA = totalGPA / studentCount;
+
+    // Display class report
+    cout << "Class Report" << endl;
+    cout << "Average GPA: " << fixed << setprecision(2) << averageGPA << endl;
+    cout << "Highest GPA: " << highestGPA << endl;
+    cout << "Lowest GPA: " << lowestGPA << endl;
+}
+
+// Function to rank students based on GPA
+void rankStudents()
+{
+    if (studentCount == 0)
+    {
+        cout << "No students in the class.\n";
+        return;
+    }
+
+    // Copy student information to temporary arrays for sorting
+    int tempID[MAX_STUDENTS];
+    string tempName[MAX_STUDENTS];
+    double tempGPA[MAX_STUDENTS];
+    for (int i = 0; i < studentCount; ++i)
+    {
+        tempID[i] = studentID[i];
+        tempName[i] = studentName[i];
+        tempGPA[i] = studentGPA[i];
+    }
+
+    // Sort students based on GPA in descending order
+    for (int i = 0; i < studentCount - 1; ++i)
+        {
+        for (int j = 0; j < studentCount - i - 1; ++j)
+        {
+            if (tempGPA[j] < tempGPA[j + 1])
+            {
+                // Swap student ID
+                int temp = tempID[j];
+                tempID[j] = tempID[j + 1];
+                tempID[j + 1] = temp;
+
+                // Swap student name
+                string tempStr = tempName[j];
+                tempName[j] = tempName[j + 1];
+                tempName[j + 1] = tempStr;
+
+                // Swap GPA
+                double tempVal = tempGPA[j];
+                tempGPA[j] = tempGPA[j + 1];
+                tempGPA[j + 1] = tempVal;
+            }
+        }
+    }
+
+    // Display ranked students
+    cout << "Ranked Students" << endl;
+    for (int i = 0; i < studentCount; ++i)
+    {
+        cout << "Rank " << i + 1 << ": " << tempName[i] << " (ID: " << tempID[i] << ", GPA: " << tempGPA[i] << ")" << endl;
+    }
+}
+
+// Function to display top performers based on GPA
+void displayTopPerformers(int numTopPerformers)
+{
+    if (studentCount == 0)
+    {
+        cout << "No students in the class.\n";
+        return;
+    }
+
+    // Copy student information to temporary arrays for sorting
+    int tempID[MAX_STUDENTS];
+    string tempName[MAX_STUDENTS];
+    double tempGPA[MAX_STUDENTS];
+    for (int i = 0; i < studentCount; ++i)
+    {
+        tempID[i] = studentID[i];
+        tempName[i] = studentName[i];
+        tempGPA[i] = studentGPA[i];
+    }
+
+    // Sort students based on GPA in descending order
+    for (int i = 0; i < studentCount - 1; ++i)
+        {
+        for (int j = 0; j < studentCount - i - 1; ++j)
+        {
+            if (tempGPA[j] < tempGPA[j + 1])
+            {
+                // Swap student ID
+                int temp = tempID[j];
+                tempID[j] = tempID[j + 1];
+                tempID[j + 1] = temp;
+
+                // Swap student name
+                string tempStr = tempName[j];
+                tempName[j] = tempName[j + 1];
+                tempName[j + 1] = tempStr;
+
+                // Swap GPA
+                double tempVal = tempGPA[j];
+                tempGPA[j] = tempGPA[j + 1];
+                tempGPA[j + 1] = tempVal;
+            }
+        }
+    }
+
+    // Display top performers
+    cout << "Top " << numTopPerformers << " Performers" << endl;
+    for (int i = 0; i < min(numTopPerformers, studentCount); ++i)
+    {
+        cout << "Rank " << i + 1 << ": " << tempName[i] << " (ID: " << tempID[i] << ", GPA: " << tempGPA[i] << ")" << endl;
+    }
+}
+
+// Function to search for a student by ID
+void searchStudent(int searchID)
+{
+    bool found = false;
+
+    for (int i = 0; i < studentCount; ++i)
+    {
+        if (studentID[i] == searchID) {
+            cout << "Student Found" << endl;
+            cout << "Student Name: " << studentName[i] << endl;
+            cout << "GPA: " << studentGPA[i] << endl;
+            found = true;
+            break;
+        }
+    }
+
+    if (!found)
+    {
+        cout << "Student Not Found" << endl;
+    }
+}
+
+
+// Function to represent class statistics graphically, such as using bar charts
+void displayClassStatisticsGraph(double gpas[], int numStudents)
+{
+    // Display bar chart for GPAs
+    cout << "Class GPA Statistics" << endl;
+    for (int i = 0; i < numStudents; i++)
+        {
+        cout << "Student " << i + 1 << ": ";
+        for (int j = 0; j < gpas[i]; j++)
+        {
+            cout << "*";
+        }
+        cout << endl;
+    }
+}
+
+
+int main()
+{
+    int choice;
+
+    do
+        {
+        // Display menu
+        cout <<"*-----------------------------------------------*";
+        cout << "\n   Student Grade Management System Menu\n";
+        cout <<"*-----------------------------------------------*"<<endl;
+        cout << "1. Add Student"<<endl;
+        cout << "2. Remove Student"<<endl;
+        cout << "3. Update Contact Information"<<endl;
+        cout << "4. Calculate GPA"<<endl;
+        cout << "5. Display Student Information"<<endl;
+        cout << "6. Generate Class Report"<<endl;
+        cout << "7. Rank Students"<<endl;
+        cout << "8. Top Performers"<<endl;
+        cout << "9. Search Student"<<endl;
+        cout << "10. Graphical Representation"<<endl;
+        cout << "0. Exit\n";
+
+
+        // Prompt user for choice
+        cout << "Enter your choice: ";
+        cin >> choice;
+
+        // Process user choice
+        switch (choice)
+        {
+            case 1:
+                addStudent();
+                break;
+            case 2:
+                removeStudent();
+                break;
+            case 3:
+                {
+                    int id;
+                    cout << "Enter student ID to update contact information: ";
+                    cin >> id;
+                    bool updateStatus = updateContactInfo(id);
+                    if (updateStatus)
+                        {
+                        // If contact information is updated, recalculate GPA
+                        int index = -1;
+                        for (int i = 0; i < studentCount; ++i)
+                        {
+                            if (studentID[i] == id)
+                            {
+                                index = i;
+                                break;
+                            }
+                        }
+                        if (index != -1)
+                        {
+                          //  calculateGPA(char grade[]);
+                        }
+                    }
+                }
+                break;
+            case 4:
+            {
+    char grades[3]; // Array to store grades for three courses
+    int studentid = 0;
+    bool check= false;
+    cout << "Enter the student id: ";
+    cin >> studentid;
+
+    for (int i = 0; i < studentCount; i++)
+	{
+        if (studentID[i] == studentid)
+        {
+        	check= true;
+            // Input grades for each course
+            cout << "Enter grade for Course 1 (A, B, C, or F): ";
+            cin >> grades[0];
+            cout << "Enter grade for Course 2 (A, B, C, or F): ";
+            cin >> grades[1];
+            cout << "Enter grade for Course 3 (A, B, C, or F): ";
+            cin >> grades[2];
+
+            // Calculate GPA
+             studentGPA[i] = calculateGPA(grades);
+
+
+            // Output GPA
+            cout << "The GPA for the student is: " << studentGPA[i] << endl;
+            break; // No need to continue the loop once student is found and GPA is calculated
+        }
+    }
+    if(!check)
+    {
+    	cout<<"The entered student id is invalid:"<<endl;
+	}
+
+	}
+                break;
+          	case 5:
+{
+    int id;
+    cout << "Enter student ID to display information: ";
+    cin >> id;
+    // Search for the student ID in the array
+    int index = -1;
+    for (int i = 0; i < studentCount; ++i)
+    {
+        if (studentID[i] == id) {
+            index = i;
+            break;
+        }
+    }
+    if (index != -1)
+    {
+        // If the student ID is found, display the information
+        displayStudentInfo(studentID[index], studentName[index], studentGPA[index]);
+    } else {
+        // If the student ID is not found, display a message
+        cout << "Student not found." << endl;
+    }
+}
+break;
+
+            case 6:
+                generateClassReport();
+                break;
+            case 7:
+                rankStudents();
+                break;
+            	case 8:
+{
+    int numTopPerformers;
+    cout << "Enter the number of top performers to display: ";
+    cin >> numTopPerformers;
+    displayTopPerformers(numTopPerformers);
+}
+break;
+case 9:
+{
+    int searchID;
+    cout << "Enter student ID to search: ";
+    cin >> searchID;
+    searchStudent(searchID);
+}
+break;
+
+            case 10:
+                  displayClassStatisticsGraph(studentGPA, studentCount);
+
+                break;
+            case 0:
+                cout << "Exiting program.\n";
+                break;
+            default:
+                cout << "Invalid choice. Please try again.\n";
+        }
+    } while (choice != 0);
+
+    return 0;
+}
